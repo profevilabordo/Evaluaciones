@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduGen Pro — Configurador</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%234f46e5'/%3E%3Cstop offset='100%25' stop-color='%237c3aed'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='22' fill='url(%23g)'/%3E%3Crect x='22' y='28' width='40' height='5' rx='2.5' fill='white' opacity='.9'/%3E%3Crect x='22' y='40' width='56' height='5' rx='2.5' fill='white' opacity='.9'/%3E%3Crect x='22' y='52' width='48' height='5' rx='2.5' fill='white' opacity='.9'/%3E%3Crect x='22' y='64' width='32' height='5' rx='2.5' fill='white' opacity='.7'/%3E%3Ccircle cx='74' cy='72' r='16' fill='%23fbbf24'/%3E%3Ctext x='74' y='78' text-anchor='middle' font-size='18' font-weight='900' fill='white' font-family='Arial'%3EA%2B%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%234f46e5'/><stop offset='100%25' stop-color='%237c3aed'/></linearGradient></defs><rect width='100' height='100' rx='22' fill='url(%23g)'/><rect x='22' y='28' width='40' height='5' rx='2.5' fill='white' opacity='.9'/><rect x='22' y='40' width='56' height='5' rx='2.5' fill='white' opacity='.9'/><rect x='22' y='52' width='48' height='5' rx='2.5' fill='white' opacity='.9'/><rect x='22' y='64' width='32' height='5' rx='2.5' fill='white' opacity='.7'/><circle cx='74' cy='72' r='16' fill='%23fbbf24'/><text x='74' y='78' text-anchor='middle' font-size='18' font-weight='900' fill='white' font-family='Arial'>A</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --accent: #4f46e5;
+    --accent-dark: #3730a3;
+    --accent-light: #eef0ff;
+    --success: #059669;
+    --success-light: #ecfdf5;
+    --danger: #dc2626;
+    --border: #e2e6f0;
+    --text: #1e1f2e;
+    --text2: #4b5578;
+    --text3: #8b92b0;
+    --surface: #ffffff;
+    --bg: #f0f2f7;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Sora', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, #4f46e5 0%, #3730a3 60%, #2d1fa3 100%);
+    padding: 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: ''; position: absolute;
+    top: -80px; right: -80px;
+    width: 280px; height: 280px; border-radius: 50%;
+    background: rgba(255,255,255,.05);
+  }
+  header::after {
+    content: ''; position: absolute;
+    bottom: -50px; left: 20%;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04);
+  }
+  .header-content { position: relative; z-index: 1; }
+  .header-icon {
+    font-size: 48px; margin-bottom: 12px;
+    display: inline-block;
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  header h1 { color: #fff; font-size: 36px; font-weight: 800; letter-spacing: -1px; }
+  header p { color: rgba(255,255,255,.7); font-size: 16px; margin-top: 6px; }
+
+  /* ── MAIN ── */
+  main {
+    flex: 1;
+    max-width: 760px;
+    width: 100%;
+    margin: 40px auto;
+    padding: 0 24px 60px;
+  }
+
+  .steps-bar {
+    display: flex; align-items: center; justify-content: center;
+    gap: 0; margin-bottom: 40px;
+  }
+  .step-dot {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    position: relative;
+  }
+  .step-dot .dot {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+    background: #e2e8f0; color: var(--text3);
+    transition: all .3s;
+    border: 2px solid #e2e8f0;
+  }
+  .step-dot.active .dot { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 0 0 4px rgba(79,70,229,.15); }
+  .step-dot.done .dot { background: var(--success); color: #fff; border-color: var(--success); }
+  .step-dot .label { font-size: 11px; font-weight: 600; color: var(--text3); white-space: nowrap; }
+  .step-dot.active .label { color: var(--accent); }
+  .step-dot.done .label { color: var(--success); }
+  .step-line { width: 60px; height: 2px; background: #e2e8f0; margin-bottom: 20px; transition: background .3s; }
+  .step-line.done { background: var(--success); }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 24px rgba(0,0,0,.06);
+    overflow: hidden;
+    animation: fadeUp .4s ease;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .card-header {
+    padding: 24px 28px 20px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
+  }
+  .card-header h2 { font-size: 20px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 10px; }
+  .card-header p { font-size: 13px; color: var(--text3); margin-top: 4px; }
+  .card-body { padding: 28px; }
+
+  /* ── FORM ── */
+  .field { margin-bottom: 20px; }
+  .field label {
+    display: block; font-size: 12px; font-weight: 700;
+    color: var(--text2); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 7px;
+  }
+  .field input[type=text] {
+    width: 100%; padding: 12px 16px;
+    border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+    font-family: 'Sora', sans-serif; font-size: 14px; color: var(--text);
+    outline: none; transition: all .2s;
+  }
+  .field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,70,229,.1); }
+  .field input.error { border-color: var(--danger); }
+
+  /* ── TAGS INPUT ── */
+  .tags-container {
+    border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+    padding: 8px 10px; min-height: 52px;
+    display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+    cursor: text; transition: all .2s; background: var(--surface);
+  }
+  .tags-container:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,70,229,.1); }
+  .tags-container.error { border-color: var(--danger); }
+  .tag {
+    display: flex; align-items: center; gap: 5px;
+    background: var(--accent-light); color: var(--accent);
+    border: 1px solid rgba(79,70,229,.2);
+    padding: 4px 10px; border-radius: 20px;
+    font-size: 13px; font-weight: 500;
+    animation: tagIn .2s ease;
+  }
+  @keyframes tagIn { from { opacity:0; transform: scale(.85); } to { opacity:1; transform: scale(1); } }
+  .tag-remove {
+    cursor: pointer; font-size: 15px; line-height: 1;
+    color: rgba(79,70,229,.5); transition: color .15s;
+    background: none; border: none; padding: 0;
+  }
+  .tag-remove:hover { color: var(--danger); }
+  .tag-input {
+    border: none; outline: none; font-family: 'Sora', sans-serif;
+    font-size: 13px; color: var(--text); background: transparent;
+    flex: 1; min-width: 120px; padding: 4px 4px;
+  }
+  .field-hint { font-size: 11px; color: var(--text3); margin-top: 5px; }
+  .error-msg { font-size: 11px; color: var(--danger); margin-top: 4px; font-weight: 600; display: none; }
+  .error-msg.show { display: block; }
+
+  /* ── NAV BUTTONS ── */
+  .nav-btns {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 28px;
+    border-top: 1px solid var(--border);
+    background: #fafbff;
+  }
+  .btn-next {
+    display: flex; align-items: center; gap: 8px;
+    padding: 12px 28px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+    color: #fff; border: none; border-radius: var(--radius-sm);
+    font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: all .2s;
+    box-shadow: 0 4px 16px rgba(79,70,229,.25);
+  }
+  .btn-next:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(79,70,229,.3); }
+  .btn-back {
+    display: flex; align-items: center; gap: 6px;
+    padding: 12px 22px;
+    background: transparent; color: var(--text2);
+    border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+    font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all .2s;
+  }
+  .btn-back:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── PREVIEW ── */
+  .preview-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    margin-bottom: 20px;
+  }
+  .preview-item {
+    background: var(--bg); border-radius: var(--radius-sm);
+    padding: 14px 16px; border: 1px solid var(--border);
+  }
+  .preview-item .pi-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--text3); margin-bottom: 4px; }
+  .preview-item .pi-val { font-size: 14px; font-weight: 600; color: var(--text); }
+  .preview-item.full { grid-column: 1 / -1; }
+  .tags-preview { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+  .tag-preview {
+    background: var(--accent-light); color: var(--accent);
+    padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 500;
+    border: 1px solid rgba(79,70,229,.2);
+  }
+
+  .generate-app-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    color: #fff; border: none; border-radius: var(--radius);
+    font-family: 'Sora', sans-serif; font-size: 16px; font-weight: 700;
+    cursor: pointer; transition: all .2s;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    box-shadow: 0 4px 20px rgba(5,150,105,.3);
+    margin-top: 8px;
+  }
+  .generate-app-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(5,150,105,.35); }
+
+  /* ── SUCCESS ── */
+  .success-screen {
+    text-align: center; padding: 48px 28px;
+  }
+  .success-icon { font-size: 64px; margin-bottom: 16px; animation: bounce .6s ease; }
+  @keyframes bounce { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+  .success-screen h2 { font-size: 26px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+  .success-screen p { font-size: 14px; color: var(--text2); margin-bottom: 28px; line-height: 1.6; }
+  .download-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 16px 36px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+    color: #fff; border: none; border-radius: var(--radius);
+    font-family: 'Sora', sans-serif; font-size: 16px; font-weight: 700;
+    cursor: pointer; transition: all .2s;
+    box-shadow: 0 4px 20px rgba(79,70,229,.3);
+    text-decoration: none;
+  }
+  .download-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(79,70,229,.35); }
+  .restart-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: 16px; padding: 10px 24px;
+    background: transparent; color: var(--text2);
+    border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+    font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all .2s;
+  }
+  .restart-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  footer {
+    text-align: center; padding: 20px;
+    font-size: 12px; color: var(--text3);
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-content">
+    <div class="header-icon">📋</div>
+    <h1>EduGen Pro</h1>
+    <p>Configurá tu versión personalizada en 3 pasos</p>
+  </div>
+</header>
+
+<main>
+
+  <!-- STEPS BAR -->
+  <div class="steps-bar">
+    <div class="step-dot active" id="dot1">
+      <div class="dot">1</div>
+      <div class="label">Datos personales</div>
+    </div>
+    <div class="step-line" id="line1"></div>
+    <div class="step-dot" id="dot2">
+      <div class="dot">2</div>
+      <div class="label">Escuelas y materias</div>
+    </div>
+    <div class="step-line" id="line2"></div>
+    <div class="step-dot" id="dot3">
+      <div class="dot">3</div>
+      <div class="label">Confirmar</div>
+    </div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="card" id="step1">
+    <div class="card-header">
+      <h2>👤 Tus datos personales</h2>
+      <p>Esta información aparecerá en todos los exámenes que generes</p>
+    </div>
+    <div class="card-body">
+      <div class="field">
+        <label>Tu nombre completo</label>
+        <input type="text" id="docente" placeholder="Ej: María González">
+        <div class="error-msg" id="err-docente">Por favor ingresá tu nombre.</div>
+      </div>
+    </div>
+    <div class="nav-btns">
+      <div></div>
+      <button class="btn-next" onclick="goStep2()">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="card" id="step2" style="display:none">
+    <div class="card-header">
+      <h2>🏫 Escuelas, Materias y Cursos</h2>
+      <p>Escribí cada valor y presioná Enter o coma para agregarlo</p>
+    </div>
+    <div class="card-body">
+
+      <div class="field">
+        <label>Escuelas / Instituciones</label>
+        <div class="tags-container" id="tc-escuelas" onclick="focusTagInput('ti-escuelas')">
+          <input class="tag-input" id="ti-escuelas" placeholder='Ej: EETP N°602 "San Martín" y Enter'>
+        </div>
+        <div class="error-msg" id="err-escuelas">Agregá al menos una escuela.</div>
+      </div>
+
+      <div class="field">
+        <label>Materias</label>
+        <div class="tags-container" id="tc-materias" onclick="focusTagInput('ti-materias')">
+          <input class="tag-input" id="ti-materias" placeholder="Ej: Matemáticas y Enter">
+        </div>
+        <div class="error-msg" id="err-materias">Agregá al menos una materia.</div>
+      </div>
+
+      <div class="field">
+        <label>Cursos</label>
+        <div class="tags-container" id="tc-cursos" onclick="focusTagInput('ti-cursos')">
+          <input class="tag-input" id="ti-cursos" placeholder="Ej: 3A y Enter">
+        </div>
+        <div class="error-msg" id="err-cursos">Agregá al menos un curso.</div>
+        <div class="field-hint">Presioná Enter o coma ( , ) para confirmar cada elemento</div>
+      </div>
+
+    </div>
+    <div class="nav-btns">
+      <button class="btn-back" onclick="goStep(1)">← Atrás</button>
+      <button class="btn-next" onclick="goStep3()">Ver resumen →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="card" id="step3" style="display:none">
+    <div class="card-header">
+      <h2>✅ Confirmar configuración</h2>
+      <p>Revisá los datos antes de generar tu app</p>
+    </div>
+    <div class="card-body">
+      <div class="preview-grid" id="previewGrid"></div>
+      <button class="generate-app-btn" onclick="generarApp()">
+        ⬇️ Generar y Descargar mi EduGen Pro
+      </button>
+    </div>
+    <div class="nav-btns">
+      <button class="btn-back" onclick="goStep(2)">← Atrás</button>
+      <div></div>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="card" id="stepSuccess" style="display:none">
+    <div class="success-screen">
+      <div class="success-icon">🎉</div>
+      <h2>¡Tu EduGen está listo!</h2>
+      <p>Se descargó un archivo <strong>HTML</strong> con tu configuración personalizada.<br>
+      Solo tenés que abrirlo con doble click en cualquier computadora.<br>
+      ¡No necesita internet ni instalación!</p>
+      <a id="downloadLink" class="download-btn">⬇️ Descargar de nuevo</a>
+      <br>
+      <button class="restart-btn" onclick="reiniciar()">↩ Configurar otra versión</button>
+    </div>
+  </div>
+
+</main>
+
+<footer>EduGen Pro — Generador de Evaluaciones Académicas</footer>
+
+<script>
+// ── TAG INPUTS ─────────────────────────────────────────────────────────────
+const tagStores = { escuelas: [], materias: [], cursos: [] };
+
+function focusTagInput(id) { document.getElementById(id).focus(); }
+
+function setupTagInput(inputId, containerId, store) {
+  const input = document.getElementById(inputId);
+  input.addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ',') && input.value.trim()) {
+      e.preventDefault();
+      addTag(input.value.trim().replace(/,$/, ''), containerId, store, inputId);
+      input.value = '';
+    } else if (e.key === 'Backspace' && input.value === '' && tagStores[store].length > 0) {
+      removeTag(tagStores[store].length - 1, containerId, store, inputId);
+    }
+  });
+}
+
+function addTag(val, containerId, store, inputId) {
+  if (!val || tagStores[store].includes(val)) return;
+  tagStores[store].push(val);
+  renderTags(containerId, store, inputId);
+  // clear error
+  const errId = 'err-' + store;
+  const errEl = document.getElementById(errId);
+  if (errEl) { errEl.classList.remove('show'); document.getElementById('tc-'+store).classList.remove('error'); }
+}
+
+function removeTag(idx, containerId, store, inputId) {
+  tagStores[store].splice(idx, 1);
+  renderTags(containerId, store, inputId);
+}
+
+function renderTags(containerId, store, inputId) {
+  const container = document.getElementById(containerId);
+  const input = document.getElementById(inputId);
+  // Remove all tags (keep input)
+  Array.from(container.querySelectorAll('.tag')).forEach(t => t.remove());
+  // Re-add before input
+  tagStores[store].forEach((val, idx) => {
+    const tag = document.createElement('div');
+    tag.className = 'tag';
+    tag.innerHTML = `${val} <button class="tag-remove" onclick="removeTag(${idx}, '${containerId}', '${store}', '${inputId}')">×</button>`;
+    container.insertBefore(tag, input);
+  });
+}
+
+setupTagInput('ti-escuelas', 'tc-escuelas', 'escuelas');
+setupTagInput('ti-materias', 'tc-materias', 'materias');
+setupTagInput('ti-cursos', 'tc-cursos', 'cursos');
+
+// ── NAVIGATION ─────────────────────────────────────────────────────────────
+let currentStep = 1;
+
+function goStep(n) {
+  document.getElementById(`step${currentStep}`).style.display = 'none';
+  if (currentStep <= 3) {
+    document.getElementById(`dot${currentStep}`).classList.remove('active');
+    document.getElementById(`dot${currentStep}`).classList.add('done');
+    document.getElementById(`dot${currentStep}`).querySelector('.dot').textContent = '✓';
+  }
+  currentStep = n;
+  document.getElementById(`step${n}`).style.display = '';
+  document.getElementById(`dot${n}`).classList.remove('done');
+  document.getElementById(`dot${n}`).classList.add('active');
+  document.getElementById(`dot${n}`).querySelector('.dot').textContent = n;
+  if (n > 1) document.getElementById(`line${n-1}`).classList.add('done');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goStep2() {
+  const docente = document.getElementById('docente').value.trim();
+  if (!docente) {
+    document.getElementById('err-docente').classList.add('show');
+    document.getElementById('docente').classList.add('error');
+    return;
+  }
+  document.getElementById('err-docente').classList.remove('show');
+  document.getElementById('docente').classList.remove('error');
+  goStep(2);
+}
+
+function goStep3() {
+  let ok = true;
+  if (tagStores.escuelas.length === 0) {
+    document.getElementById('err-escuelas').classList.add('show');
+    document.getElementById('tc-escuelas').classList.add('error');
+    ok = false;
+  }
+  if (tagStores.materias.length === 0) {
+    document.getElementById('err-materias').classList.add('show');
+    document.getElementById('tc-materias').classList.add('error');
+    ok = false;
+  }
+  if (tagStores.cursos.length === 0) {
+    document.getElementById('err-cursos').classList.add('show');
+    document.getElementById('tc-cursos').classList.add('error');
+    ok = false;
+  }
+  if (!ok) return;
+
+  // Build preview
+  const docente = document.getElementById('docente').value.trim();
+  document.getElementById('previewGrid').innerHTML = `
+    <div class="preview-item full">
+      <div class="pi-label">👤 Docente</div>
+      <div class="pi-val">${docente}</div>
+    </div>
+    <div class="preview-item full">
+      <div class="pi-label">🏫 Escuelas</div>
+      <div class="tags-preview">${tagStores.escuelas.map(e => `<span class="tag-preview">${e}</span>`).join('')}</div>
+    </div>
+    <div class="preview-item">
+      <div class="pi-label">📚 Materias</div>
+      <div class="tags-preview">${tagStores.materias.map(m => `<span class="tag-preview">${m}</span>`).join('')}</div>
+    </div>
+    <div class="preview-item">
+      <div class="pi-label">🎓 Cursos</div>
+      <div class="tags-preview">${tagStores.cursos.map(c => `<span class="tag-preview">${c}</span>`).join('')}</div>
+    </div>
+  `;
+  goStep(3);
+}
+
+function reiniciar() {
+  tagStores.escuelas = []; tagStores.materias = []; tagStores.cursos = [];
+  renderTags('tc-escuelas','escuelas','ti-escuelas');
+  renderTags('tc-materias','materias','ti-materias');
+  renderTags('tc-cursos','cursos','ti-cursos');
+  document.getElementById('docente').value = '';
+  ['step2','step3','stepSuccess'].forEach(id => document.getElementById(id).style.display = 'none');
+  currentStep = 1;
+  document.getElementById('step1').style.display = '';
+  ['dot1','dot2','dot3'].forEach((id,i) => {
+    const d = document.getElementById(id);
+    d.classList.remove('active','done');
+    d.querySelector('.dot').textContent = i+1;
+  });
+  ['line1','line2'].forEach(id => document.getElementById(id).classList.remove('done'));
+  document.getElementById('dot1').classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── GENERATE APP ───────────────────────────────────────────────────────────
+function generarApp() {
+  const docente = document.getElementById('docente').value.trim();
+  const escuelas = tagStores.escuelas;
+  const materias = tagStores.materias;
+  const cursos = tagStores.cursos;
+
+  const escuelasOptions = escuelas.map(e => `            <option>${escapeHtml(e)}</option>`).join('\n');
+  const materiasOptions = materias.map(m => `              <option>${escapeHtml(m)}</option>`).join('\n');
+  const cursosOptions = cursos.map(c => `              <option>${escapeHtml(c)}</option>`).join('\n');
+  const docenteOption = `            <option>${escapeHtml(docente)}</option>`;
+
+  const appHTML = `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduGen Pro — ${escapeHtml(docente)}</title>
+<link rel=\"icon\" href=\"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%234f46e5'/><stop offset='100%25' stop-color='%237c3aed'/></linearGradient></defs><rect width='100' height='100' rx='22' fill='url(%23g)'/><rect x='22' y='28' width='40' height='5' rx='2.5' fill='white' opacity='.9'/><rect x='22' y='40' width='56' height='5' rx='2.5' fill='white' opacity='.9'/><rect x='22' y='52' width='48' height='5' rx='2.5' fill='white' opacity='.9'/><rect x='22' y='64' width='32' height='5' rx='2.5' fill='white' opacity='.7'/><circle cx='74' cy='72' r='16' fill='%23fbbf24'/><text x='74' y='78' text-anchor='middle' font-size='18' font-weight='900' fill='white' font-family='Arial'>A</text></svg>\">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f0f2f7; --surface: #ffffff; --surface2: #f7f8fc; --border: #e2e6f0;
+    --accent: #4f46e5; --accent-light: #eef0ff; --accent-dark: #3730a3;
+    --success: #059669; --success-light: #ecfdf5; --danger: #dc2626; --danger-light: #fef2f2;
+    --amber: #d97706; --amber-light: #fffbeb; --purple: #7c3aed; --purple-light: #f5f3ff;
+    --text: #1e1f2e; --text2: #4b5578; --text3: #8b92b0;
+    --radius: 14px; --radius-sm: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.06);
+    --shadow-lg: 0 8px 32px rgba(79,70,229,.12);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Sora', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 80px; }
+  header { background: linear-gradient(135deg, #4f46e5 0%, #3730a3 60%, #2d1fa3 100%); padding: 28px 32px; box-shadow: 0 4px 24px rgba(79,70,229,.3); position: relative; overflow: hidden; }
+  header::before { content: ''; position: absolute; top: -60px; right: -60px; width: 220px; height: 220px; border-radius: 50%; background: rgba(255,255,255,.05); }
+  header::after { content: ''; position: absolute; bottom: -40px; left: 30%; width: 160px; height: 160px; border-radius: 50%; background: rgba(255,255,255,.04); }
+  .header-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; position: relative; z-index: 1; }
+  .logo { display: flex; align-items: center; gap: 14px; }
+  .logo-icon { background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.2); border-radius: 14px; width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+  .logo h1 { color: #fff; font-size: 26px; font-weight: 800; letter-spacing: -.5px; }
+  .logo p { color: rgba(255,255,255,.65); font-size: 13px; margin-top: 2px; }
+  .upload-btn { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,.15); border: 1.5px solid rgba(255,255,255,.25); color: #fff; padding: 12px 22px; border-radius: var(--radius); font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: all .2s; }
+  .upload-btn:hover { background: rgba(255,255,255,.25); transform: translateY(-1px); }
+  main { max-width: 1200px; margin: 32px auto; padding: 0 24px; display: grid; grid-template-columns: 340px 1fr; gap: 24px; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+  .alerts { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 8px; }
+  .alert { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; animation: slideIn .3s ease; }
+  .alert-error { background: var(--danger-light); border-left: 4px solid var(--danger); color: #991b1b; }
+  .alert-success { background: var(--success-light); border-left: 4px solid var(--success); color: #065f46; }
+  .alert-close { margin-left: auto; cursor: pointer; opacity: .6; font-size: 18px; background: none; border: none; color: inherit; }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+  .card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; }
+  .card-header { padding: 20px 24px; border-bottom: 1px solid var(--border); background: var(--surface2); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .card-title { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; color: var(--text); }
+  .card-body { padding: 24px; }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 12px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+  .field select, .field input[type=text] { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-family: 'Sora', sans-serif; font-size: 14px; color: var(--text); background: var(--surface); outline: none; transition: all .2s; appearance: none; }
+  .field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238b92b0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+  .field select:focus, .field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,70,229,.1); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .mode-toggle { display: flex; border-radius: var(--radius-sm); overflow: hidden; border: 1.5px solid var(--border); }
+  .mode-btn { flex: 1; padding: 10px; font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all .2s; display: flex; align-items: center; justify-content: center; gap: 6px; background: var(--surface); color: var(--text2); }
+  .mode-btn.active { background: var(--accent); color: #fff; }
+  .mode-hint { font-size: 12px; color: var(--accent); font-weight: 600; margin-top: 6px; }
+  .slider-row { display: flex; align-items: center; gap: 12px; }
+  .slider-row input[type=range] { flex: 1; accent-color: var(--accent); }
+  .slider-val { background: var(--accent-light); color: var(--accent); font-weight: 700; font-size: 14px; padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(79,70,229,.15); min-width: 44px; text-align: center; font-family: 'JetBrains Mono', monospace; }
+  .generate-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%); color: #fff; border: none; border-radius: var(--radius); font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: var(--shadow-lg); margin-top: 8px; }
+  .generate-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(79,70,229,.25); }
+  .generate-btn:disabled { background: #cbd5e1; box-shadow: none; cursor: not-allowed; transform: none; }
+  .badge-count { background: rgba(255,255,255,.2); font-size: 12px; padding: 2px 8px; border-radius: 20px; }
+  .tip-box { background: linear-gradient(135deg, #eef0ff 0%, #f5f3ff 100%); border: 1px solid rgba(79,70,229,.15); border-radius: var(--radius); padding: 18px 20px; margin-top: 16px; }
+  .tip-box h4 { font-size: 13px; font-weight: 700; color: var(--accent-dark); margin-bottom: 6px; }
+  .tip-box p { font-size: 12px; color: #4338ca; line-height: 1.6; }
+  .tip-box code { background: rgba(79,70,229,.1); padding: 1px 5px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+  .banco-count { font-size: 13px; color: var(--text3); font-weight: 400; }
+  .banco-actions { display: flex; align-items: center; gap: 12px; }
+  .link-btn { background: none; border: none; cursor: pointer; font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; transition: color .2s; }
+  .link-btn-accent { color: var(--accent); } .link-btn-accent:hover { color: var(--accent-dark); }
+  .link-btn-danger { color: var(--danger); } .link-btn-danger:hover { color: #991b1b; }
+  .question-list { max-height: 680px; overflow-y: auto; }
+  .empty-state { padding: 80px 24px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; }
+  .empty-icon { width: 80px; height: 80px; border-radius: 50%; background: var(--surface2); border: 2px dashed var(--border); display: flex; align-items: center; justify-content: center; font-size: 32px; opacity: .6; }
+  .empty-state h3 { font-size: 16px; font-weight: 600; color: var(--text2); }
+  .empty-state p { font-size: 13px; color: var(--text3); }
+  .q-item { padding: 20px 24px; border-bottom: 1px solid var(--border); transition: background .15s; position: relative; }
+  .q-item:last-child { border-bottom: none; }
+  .q-item:hover { background: var(--surface2); }
+  .q-item.selected { background: var(--accent-light); border-left: 4px solid var(--accent); }
+  .q-item.selectable { cursor: pointer; }
+  .q-badges { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+  .badge { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: .4px; display: flex; align-items: center; gap: 3px; }
+  .badge-num { background: #e2e8f0; color: #475569; }
+  .badge-mc { background: var(--purple-light); color: var(--purple); border: 1px solid rgba(124,58,237,.15); }
+  .badge-vf { background: var(--amber-light); color: var(--amber); border: 1px solid rgba(217,119,6,.15); }
+  .badge-open { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+  .badge-tema { background: var(--accent-light); color: var(--accent); border: 1px solid rgba(79,70,229,.15); }
+  .q-text { font-size: 15px; font-weight: 500; color: var(--text); line-height: 1.5; margin-bottom: 10px; }
+  .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+  .option-item { display: flex; align-items: flex-start; gap: 6px; padding: 8px 10px; border-radius: var(--radius-sm); font-size: 13px; border: 1px solid var(--border); background: var(--surface2); color: var(--text2); }
+  .option-item.correct { background: var(--success-light); border-color: #a7f3d0; color: #065f46; font-weight: 600; }
+  .option-letra { font-weight: 700; text-transform: uppercase; flex-shrink: 0; }
+  .answer-box { background: #f8fafc; border-left: 3px solid #cbd5e1; padding: 10px 14px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: 13px; color: var(--text2); }
+  .answer-box .label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--text3); display: block; margin-bottom: 3px; }
+  .justif-box { background: var(--amber-light); border-left: 3px solid #fbbf24; padding: 10px 14px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: 13px; color: #78350f; margin-top: 6px; }
+  .q-checkbox { position: absolute; top: 22px; left: 20px; width: 18px; height: 18px; border-radius: 5px; border: 2px solid #cbd5e1; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; transition: all .15s; }
+  .q-checkbox.checked { background: var(--accent); border-color: var(--accent); }
+  .q-item.selectable .q-inner { padding-left: 28px; }
+  .q-actions { position: absolute; top: 16px; right: 16px; display: flex; flex-direction: column; gap: 4px; opacity: 0; transition: opacity .2s; }
+  .q-item:hover .q-actions { opacity: 1; }
+  .action-btn { width: 32px; height: 32px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 15px; transition: all .15s; color: var(--text2); }
+  .action-btn:hover { transform: scale(1.1); }
+  .action-btn.edit:hover { background: var(--accent-light); border-color: rgba(79,70,229,.3); color: var(--accent); }
+  .action-btn.del:hover { background: var(--danger-light); border-color: rgba(220,38,38,.2); color: var(--danger); }
+  .edit-form { margin-top: 10px; display: flex; flex-direction: column; gap: 10px; }
+  .edit-form label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; color: var(--text3); display: block; margin-bottom: 4px; }
+  .edit-form textarea, .edit-form input { width: 100%; padding: 8px 12px; border: 1.5px solid rgba(79,70,229,.3); border-radius: var(--radius-sm); font-family: 'Sora', sans-serif; font-size: 13px; color: var(--text); outline: none; resize: none; transition: box-shadow .2s; }
+  .edit-form textarea:focus, .edit-form input:focus { box-shadow: 0 0 0 3px rgba(79,70,229,.1); }
+  .edit-actions { display: flex; gap: 8px; }
+  .btn-save { display: flex; align-items: center; gap: 6px; padding: 8px 16px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-sm); font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .btn-save:hover { background: var(--accent-dark); }
+  .btn-cancel { display: flex; align-items: center; gap: 6px; padding: 8px 16px; background: #f1f5f9; color: var(--text2); border: none; border-radius: var(--radius-sm); font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .no-match { padding: 48px; text-align: center; color: var(--text3); font-size: 14px; }
+  footer { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,.85); backdrop-filter: blur(12px); border-top: 1px solid var(--border); padding: 12px 24px; text-align: center; font-size: 12px; color: var(--text3); font-weight: 500; }
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">📋</div>
+      <div>
+        <h1>EduGen Pro</h1>
+        <p>${escapeHtml(docente)}</p>
+      </div>
+    </div>
+    <label class="upload-btn">
+      📂 Cargar CSV de Preguntas
+      <input type="file" accept=".csv" id="csvInput" style="display:none">
+    </label>
+  </div>
+</header>
+
+<main>
+  <div class="alerts" id="alerts"></div>
+  <aside class="sidebar">
+    <div class="card">
+      <div class="card-header"><div class="card-title"><span>⚙️</span> Configuración</div></div>
+      <div class="card-body">
+        <div class="field">
+          <label>Institución Educativa</label>
+          <select id="institucion">
+${escuelasOptions}
+          </select>
+        </div>
+        <div class="field">
+          <label>Docente Responsable</label>
+          <select id="docente">
+${docenteOption}
+          </select>
+        </div>
+        <div class="grid2">
+          <div class="field">
+            <label>Asignatura</label>
+            <select id="asignatura">
+${materiasOptions}
+            </select>
+          </div>
+          <div class="field">
+            <label>Curso</label>
+            <select id="curso">
+${cursosOptions}
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Filtrar por Tema / Palabra clave</label>
+          <input type="text" id="filtroTema" placeholder="Ej: Toyotismo">
+        </div>
+        <div class="field">
+          <label>Modo de Selección</label>
+          <div class="mode-toggle">
+            <button class="mode-btn active" id="btnAleatorio" onclick="setModo('aleatorio')">🔀 Aleatorio</button>
+            <button class="mode-btn" id="btnManual" onclick="setModo('manual')">👆 Manual (<span id="selCount">0</span>)</button>
+          </div>
+          <div class="mode-hint" id="modeHint" style="display:none">✓ Hacé click en las preguntas para seleccionarlas</div>
+        </div>
+        <div class="field" id="cantidadField">
+          <label>Cantidad de Preguntas</label>
+          <div class="slider-row">
+            <input type="range" id="cantidad" min="1" max="20" value="5" oninput="document.getElementById('cantidadVal').textContent=this.value">
+            <div class="slider-val" id="cantidadVal">5</div>
+          </div>
+        </div>
+        <button class="generate-btn" id="generateBtn" onclick="generarPDF()" disabled>
+          ⬇️ Descargar Evaluación PDF
+          <span class="badge-count" id="pdfBadge" style="display:none"></span>
+        </button>
+      </div>
+    </div>
+    <div class="tip-box">
+      <h4>📌 Formatos CSV aceptados</h4>
+      <p><strong>Múltiple opción:</strong> <code>Question</code>, <code>Option A…D</code>, <code>Correct Answer</code><br><br>
+      <strong>Abierto con encabezados:</strong> <code>pregunta</code>, <code>respuesta</code>, <code>tema</code><br><br><strong>Sin encabezados:</strong> dos columnas, primera pregunta y segunda respuesta (sin fila de títulos)</p>
+    </div>
+  </aside>
+  <section class="banco-section">
+    <div class="card" style="overflow:visible">
+      <div class="card-header">
+        <div class="card-title"><span>📝</span> Banco de Preguntas <span class="banco-count" id="bancoCount"></span></div>
+        <div class="banco-actions">
+          <button class="link-btn link-btn-accent" id="btnSelAll" onclick="seleccionarTodas()" style="display:none">Seleccionar todas</button>
+          <button class="link-btn link-btn-danger" id="btnVaciar" onclick="vaciarBanco()" style="display:none">🗑 Vaciar banco</button>
+        </div>
+      </div>
+      <div class="question-list" id="questionList">
+        <div class="empty-state">
+          <div class="empty-icon">📂</div>
+          <h3>Cargá un archivo CSV para comenzar</h3>
+          <p>Aparecerán aquí todas tus preguntas</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<footer>EduGen Pro — ${escapeHtml(docente)}</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"><\/script>
+<script>
+var questions=[],modo='aleatorio',seleccionadas=new Set(),editandoId=null;
+function parseRow(r){const res=[];let cur='',inQ=false;for(let i=0;i<r.length;i++){const c=r[i];if(c==='"'){if(inQ&&r[i+1]==='"'){cur+='"';i++;}else inQ=!inQ;}else if(c===','&&!inQ){res.push(cur.trim());cur='';}else cur+=c;}res.push(cur.trim());return res;}
+function parseCSV(t){const lines=t.split('\\n').filter(l=>l.trim()!=='');if(lines.length<1)throw new Error('CSV vacío.');const firstRow=parseRow(lines[0]).map(h=>h.toLowerCase().replace(/^"|"$/g,''));const isMC=firstRow.includes('option a')||firstRow.includes('opción a');const hasH=firstRow.includes('pregunta')||firstRow.includes('question')||isMC;if(!hasH){return lines.map((line,idx)=>{const v=parseRow(line);const p=(v[0]||'').replace(/^"|"$/g,'').trim();const r=(v[1]||'').replace(/^"|"$/g,'').trim();if(!p)return null;return{id:idx,pregunta:p,respuesta:r,tipo:'abierta',tema:''};}).filter(Boolean);}const headers=firstRow;if(!isMC&&!headers.includes('pregunta'))throw new Error('Formato no reconocido.');return lines.slice(1).map((line,idx)=>{const v=parseRow(line);const get=k=>{const i=headers.indexOf(k);return i>=0?(v[i]||'').replace(/^"|"$/g,'').trim():'';};if(isMC){const cr=get('correct answer')||'';const cl=cr.replace(/^([ABCD])[\\.\\)].*/i,'$1').trim().toUpperCase();return{id:idx,pregunta:get('question')||get('pregunta'),respuesta:cr,respuestaCorrecta:cl,tipo:'mc',opciones:{a:get('option a'),b:get('option b'),c:get('option c'),d:get('option d')},justificacion:get('rationale')||'',tema:get('tema')||get('topic')||''};}else{const t=get('tipo')?.toLowerCase();return{id:idx,pregunta:get('pregunta'),respuesta:get('respuesta'),tipo:t==='vf'?'vf':t==='mc'?'mc':'abierta',tema:get('tema')||''};}}).filter(q=>q.pregunta.trim()!=='');}
+document.getElementById('csvInput').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{questions=parseCSV(ev.target.result);seleccionadas.clear();const mc=questions.filter(q=>q.tipo==='mc').length;const ab=questions.filter(q=>q.tipo==='abierta').length;const p=[];if(mc>0)p.push(mc+' múltiple opción');if(ab>0)p.push(ab+' abiertas');showAlert('success','Se cargaron '+questions.length+' preguntas: '+p.join(', ')+'.');render();}catch(err){showAlert('error',err.message);}};r.readAsText(f);e.target.value='';});
+document.getElementById('filtroTema').addEventListener('input',render);
+function getFiltered(){const t=document.getElementById('filtroTema').value.toLowerCase();if(!t)return questions;return questions.filter(q=>(q.tema||'').toLowerCase().includes(t)||q.pregunta.toLowerCase().includes(t));}
+function setModo(m){modo=m;document.getElementById('btnAleatorio').classList.toggle('active',m==='aleatorio');document.getElementById('btnManual').classList.toggle('active',m==='manual');document.getElementById('cantidadField').style.display=m==='aleatorio'?'':'none';document.getElementById('modeHint').style.display=m==='manual'?'':'none';document.getElementById('btnSelAll').style.display=(m==='manual'&&questions.length>0)?'':'none';render();updateGenerateBtn();}
+function seleccionarTodas(){const f=getFiltered();if(seleccionadas.size===f.length){seleccionadas.clear();document.getElementById('btnSelAll').textContent='Seleccionar todas';}else{f.forEach(q=>seleccionadas.add(q.id));document.getElementById('btnSelAll').textContent='Deseleccionar todas';}render();updateGenerateBtn();}
+function toggleSeleccion(id){if(seleccionadas.has(id))seleccionadas.delete(id);else seleccionadas.add(id);document.getElementById('selCount').textContent=seleccionadas.size;updateGenerateBtn();const el=document.querySelector('[data-id="'+id+'"]');if(el){el.classList.toggle('selected',seleccionadas.has(id));const cb=el.querySelector('.q-checkbox');if(cb){cb.classList.toggle('checked',seleccionadas.has(id));cb.textContent=seleccionadas.has(id)?'✓':'';}};}
+function startEdit(id){editandoId=id;render();}
+function saveEdit(id){const q=questions.find(q=>q.id===id);if(!q)return;q.pregunta=document.getElementById('ep-'+id).value;q.respuesta=document.getElementById('er-'+id).value;q.tema=document.getElementById('et-'+id).value;editandoId=null;render();}
+function cancelEdit(){editandoId=null;render();}
+function removeQuestion(id){questions=questions.filter(q=>q.id!==id);seleccionadas.delete(id);render();updateGenerateBtn();}
+function vaciarBanco(){if(!confirm('¿Vaciar el banco?'))return;questions=[];seleccionadas.clear();render();updateGenerateBtn();}
+function tipoBadge(t){if(t==='mc')return'<span class="badge badge-mc">⬜ Múltiple opción</span>';if(t==='vf')return'<span class="badge badge-vf">✓/✗ V/F</span>';return'<span class="badge badge-open">≡ Abierta</span>';}
+function render(){const filtered=getFiltered();const list=document.getElementById('questionList');document.getElementById('bancoCount').textContent='('+filtered.length+' disponible'+(filtered.length!==1?'s':'')+')';document.getElementById('btnVaciar').style.display=questions.length>0?'':'none';document.getElementById('btnSelAll').style.display=(modo==='manual'&&questions.length>0)?'':'none';document.getElementById('generateBtn').disabled=questions.length===0;document.getElementById('selCount').textContent=seleccionadas.size;const sl=document.getElementById('cantidad');sl.max=Math.min(filtered.length||20,50);if(parseInt(sl.value)>sl.max){sl.value=sl.max;document.getElementById('cantidadVal').textContent=sl.max;}if(questions.length===0){list.innerHTML='<div class="empty-state"><div class="empty-icon">📂</div><h3>Cargá un archivo CSV para comenzar</h3><p>Aparecerán aquí todas tus preguntas</p></div>';return;}if(filtered.length===0){list.innerHTML='<div class="no-match">No hay preguntas que coincidan con el filtro.</div>';return;}list.innerHTML=filtered.map((q,idx)=>{const isSel=seleccionadas.has(q.id);const isEdit=editandoId===q.id;let opts='';if(q.tipo==='mc'&&q.opciones){opts='<div class="options-grid">'+['a','b','c','d'].filter(l=>q.opciones[l]).map(l=>{const ic=(q.respuestaCorrecta||'').toLowerCase()===l;return'<div class="option-item '+(ic?'correct':'')+'"><span class="option-letra">'+l+')</span><span>'+q.opciones[l]+'</span>'+(ic?'<span style="margin-left:auto">✓</span>':'')+'</div>';}).join('')+'</div>';}let ans='';if(q.tipo!=='mc')ans='<div class="answer-box"><span class="label">Respuesta:</span>'+q.respuesta+'</div>';if(q.tipo==='mc'&&q.justificacion)ans+='<div class="justif-box"><span class="label">Justificación:</span>'+q.justificacion+'</div>';const ef=isEdit?'<div class="edit-form" onclick="event.stopPropagation()"><div><label>Pregunta</label><textarea id="ep-'+q.id+'" rows="3">'+q.pregunta+'</textarea></div><div><label>Respuesta</label><input type="text" id="er-'+q.id+'" value="'+q.respuesta+'"></div><div><label>Tema</label><input type="text" id="et-'+q.id+'" value="'+(q.tema||'')+'"></div><div class="edit-actions"><button class="btn-save" onclick="saveEdit('+q.id+')">💾 Guardar</button><button class="btn-cancel" onclick="cancelEdit()">✕ Cancelar</button></div></div>':'';const cb=modo==='manual'?'<div class="q-checkbox '+(isSel?'checked':'')+'">'+  (isSel?'✓':'')+'</div>':'';const act=!isEdit?'<div class="q-actions"><button class="action-btn edit" onclick="event.stopPropagation();startEdit('+q.id+')" title="Editar">✏️</button><button class="action-btn del" onclick="event.stopPropagation();removeQuestion('+q.id+')" title="Eliminar">🗑</button></div>':'';const cl=modo==='manual'&&!isEdit?'onclick="toggleSeleccion('+q.id+')"':'';return'<div class="q-item '+(isSel?'selected':'')+' '+(modo==='manual'?'selectable':'')+'" data-id="'+q.id+'" '+cl+'>'+cb+'<div class="q-inner"><div class="q-badges"><span class="badge badge-num">#'+(idx+1)+'</span>'+tipoBadge(q.tipo)+(q.tema?'<span class="badge badge-tema">'+q.tema+'</span>':'')+'</div>'+(!isEdit?'<div class="q-text">'+q.pregunta+'</div>':'')+(!isEdit?opts:'')+(!isEdit?ans:'')+ef+'</div>'+act+'</div>';}).join('');}
+function updateGenerateBtn(){const btn=document.getElementById('generateBtn');const badge=document.getElementById('pdfBadge');btn.disabled=questions.length===0;if(modo==='manual'&&seleccionadas.size>0){badge.style.display='';badge.textContent=seleccionadas.size+' preguntas';}else badge.style.display='none';}
+function generarPDF(){if(questions.length===0){showAlert('error','Cargá un banco primero.');return;}let sel=[];const filtered=getFiltered();if(modo==='manual'){sel=questions.filter(q=>seleccionadas.has(q.id));if(sel.length===0){showAlert('error','Seleccioná al menos una pregunta.');return;}}else{const cant=parseInt(document.getElementById('cantidad').value);if(filtered.length<cant){showAlert('error','Solo hay '+filtered.length+' preguntas disponibles.');return;}sel=[...filtered].sort(()=>0.5-Math.random()).slice(0,cant);}
+const cfg={institucion:document.getElementById('institucion').value,docente:document.getElementById('docente').value,asignatura:document.getElementById('asignatura').value,curso:document.getElementById('curso').value,tema:document.getElementById('filtroTema').value,fecha:new Date().toLocaleDateString('es-ES')};
+const {jsPDF}=window.jspdf;const doc=new jsPDF();doc.setDrawColor(0);doc.setLineWidth(0.5);doc.rect(10,10,190,42);doc.setFontSize(15);doc.setFont('helvetica','bold');doc.text(cfg.institucion.toUpperCase(),105,20,{align:'center'});doc.setFontSize(10);doc.setFont('helvetica','normal');doc.text('Profesor/a: '+cfg.docente,15,29);doc.text('Fecha: '+cfg.fecha,155,29);doc.setFont('helvetica','bold');doc.text('Asignatura: '+cfg.asignatura,15,37);doc.text('Curso: '+cfg.curso,155,37);if(cfg.tema){doc.setFont('helvetica','italic');doc.text('Tema: '+cfg.tema,15,45);}doc.setFont('helvetica','normal');doc.text('Nombre: _______________________________________________',15,60);doc.setFontSize(13);doc.setFont('helvetica','bold');doc.text('EVALUACIÓN ESCRITA',105,72,{align:'center'});let y=82;
+sel.forEach((q,idx)=>{if(y>255){doc.addPage();y=20;}doc.setFontSize(11);doc.setFont('helvetica','bold');const qt=(idx+1)+'. '+q.pregunta;const sp=doc.splitTextToSize(qt,180);doc.text(sp,15,y);y+=sp.length*6+4;if(q.tipo==='mc'&&q.opciones){doc.setFontSize(10);doc.setFont('helvetica','normal');['a','b','c','d'].forEach(l=>{if(!q.opciones[l])return;if(y>270){doc.addPage();y=20;}const ot=doc.splitTextToSize('   '+l.toUpperCase()+') '+q.opciones[l],175);doc.text(ot,18,y);y+=ot.length*5.5+2;});y+=4;}else if(q.tipo==='vf'){doc.setFontSize(10);doc.setFont('helvetica','normal');doc.text('   ☐ Verdadero      ☐ Falso',18,y);y+=12;}else{doc.setDrawColor(200);doc.line(20,y,190,y);y+=8;doc.line(20,y,190,y);y+=12;}});
+const pages=doc.internal.getNumberOfPages();for(let i=1;i<=pages;i++){doc.setPage(i);doc.setFontSize(9);doc.setFont('helvetica','normal');doc.text('Página '+i+' de '+pages,105,290,{align:'center'});}
+doc.addPage();doc.setFontSize(13);doc.setFont('helvetica','bold');doc.text('HOJA DE RESPUESTAS — SOLO DOCENTE',105,20,{align:'center'});let ky=35;sel.forEach((q,idx)=>{if(ky>270){doc.addPage();ky=20;}doc.setFontSize(10);doc.setFont('helvetica','bold');if(q.tipo==='mc'&&q.respuestaCorrecta){doc.text((idx+1)+'. Respuesta: '+q.respuestaCorrecta,15,ky);ky+=6;if(q.justificacion){doc.setFont('helvetica','italic');const sj=doc.splitTextToSize('   '+q.justificacion,175);doc.text(sj,15,ky);ky+=sj.length*5+4;}}else{doc.text((idx+1)+'.',15,ky);doc.setFont('helvetica','normal');const sa=doc.splitTextToSize(q.respuesta,170);doc.text(sa,25,ky);ky+=sa.length*5+5;}});
+doc.save('Examen_'+cfg.asignatura+'_'+cfg.curso+'_'+cfg.fecha+'.pdf');showAlert('success','¡PDF generado!');}
+function showAlert(type,msg){const c=document.getElementById('alerts');const d=document.createElement('div');d.className='alert alert-'+type;d.innerHTML='<span>'+(type==='error'?'⚠️':'✅')+'</span> '+msg+' <button class="alert-close" onclick="this.parentElement.remove()">×</button>';c.appendChild(d);setTimeout(()=>d.remove(),4000);}
+render();
+<\/script>
+</body>
+</html>`;
+
+  // Create download
+  const blob = new Blob([appHTML], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const nombreArchivo = `EduGen_${docente.replace(/\s+/g, '_')}.html`;
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = nombreArchivo;
+  a.click();
+
+  // Update download link for "descargar de nuevo"
+  document.getElementById('downloadLink').href = url;
+  document.getElementById('downloadLink').download = nombreArchivo;
+
+  // Show success screen
+  document.getElementById('step3').style.display = 'none';
+  document.getElementById('stepSuccess').style.display = '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>`;
